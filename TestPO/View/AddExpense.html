@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Expenses.html" style="height:25px;"><img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;"></a>
+            <a href="Main.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+    <div class="login-container">
+        <div class="login-box">
+            <h2 class="login-title">Добавить работника</h2>
+            <form class="login-form" id="postForm">
+                <input type="text" id="expenseCost" class="login-input" placeholder="Расход" required>
+
+                <input type="text" id="description" class="login-input" placeholder="Описание" required>
+
+                <input type="date" id="date" class="login-input" placeholder="Дата" required>
+
+                <button type="submit" class="login-button">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="queries.js"></script>
+    <script>
+        document.getElementById('postForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const expenseCost = document.getElementById('expenseCost').value;
+            const description = document.getElementById('description').value;
+            const date = document.getElementById('date').value;
+
+            try {
+                const newUser = await postData('https://localhost:7296/api/Expenses', { expenseCost, description, date, });
+            } catch (error) {
+                console.error('Ошибка добавления пользователя:', error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Диаграмма расходов и продаж</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <style>
+        .card {
+            width: 400px;
+            height: 500px;
+            align-content: center;
+        }
+
+            .card:hover {
+                background-color: #1E1E1E !important;
+            }
+    </style>
+
+    <header class="header">
+        <div class="logo">
+            <a href="Main.html" style="height:25px;"><img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;"></a>
+            <a href="Main.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+
+    <main class="grid">
+        <div class="card">
+            <h1 class="title">Диаграмма расходов</h1>
+            <canvas id="expensesPieChart"></canvas>
+        </div>
+        <div class="card">
+            <h1 class="title">Продажи за сегодня</h1>
+            <canvas id="salesTodayChart"></canvas>
+        </div>
+        <div class="card">
+            <h1 class="title">Продажи за месяц</h1>
+            <canvas id="salesMonthChart"></canvas>
+        </div>
+    </main>
+
+    <script>
+        // API для данных о продажах
+        const apiSalesBaseUrl = 'https://localhost:7296/api/Sales';
+
+        async function fetchSales() {
+            try {
+                const response = await fetch(apiSalesBaseUrl);
+                if (!response.ok) throw new Error('Ошибка загрузки данных о продажах');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Ошибка:', error);
+                return [];
+            }
+        }
+
+        function filterSalesToday(sales) {
+            const today = new Date().toISOString().split('T')[0];
+            return sales.filter(sale => sale.date.startsWith(today));
+        }
+
+        function filterSalesThisMonth(sales) {
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            return sales.filter(sale => sale.date.startsWith(currentMonth));
+        }
+
+        // Отображение круговой диаграммы для продаж
+        function renderSalesPieChart(canvasId, title, labels, values) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: title,
+                        data: values,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Основная функция для загрузки данных и создания диаграмм
+        async function renderCharts() {
+            const sales = await fetchSales();
+
+            // Продажи за сегодня
+            const salesToday = filterSalesToday(sales);
+            const labelsToday = salesToday.map(sale => `Квитанция ${sale.receiptNumber}`);
+            const valuesToday = salesToday.map(sale => sale.totalSum);
+            renderSalesPieChart('salesTodayChart', 'Продажи за сегодня', labelsToday, valuesToday);
+
+            // Продажи за месяц
+            const salesThisMonth = filterSalesThisMonth(sales);
+            const labelsMonth = salesThisMonth.map(sale => `Квитанция ${sale.receiptNumber}`);
+            const valuesMonth = salesThisMonth.map(sale => sale.totalSum);
+            renderSalesPieChart('salesMonthChart', 'Продажи за месяц', labelsMonth, valuesMonth);
+        }
+
+        // Вызываем функцию для создания диаграмм
+        renderCharts();
+    </script>
+
+    <script>
+        // API для данных о расходах
+        const apiExpensesBaseUrl = 'https://localhost:7296/api/Expenses';
+
+        async function fetchExpenses() {
+            try {
+                const response = await fetch(apiExpensesBaseUrl);
+                if (!response.ok) throw new Error('Ошибка загрузки данных о расходах');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Ошибка:', error);
+                return [];
+            }
+        }
+
+        // Отображение круговой диаграммы для расходов
+        async function renderExpensesPieChart() {
+            const expenses = await fetchExpenses();
+
+            // Подготовка данных для диаграммы
+            const labels = expenses.map(expense => expense.description || 'Без описания');
+            const values = expenses.map(expense => expense.expenseCost);
+
+            // Создание диаграммы
+            const ctx = document.getElementById('expensesPieChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Расходы',
+                        data: values,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Вызов функции для создания диаграммы расходов
+        renderExpensesPieChart();
+    </script>
+
+</body>
+</html>

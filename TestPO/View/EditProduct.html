@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать продукт</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Products.html" style="height:25px;">
+                <img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;">
+            </a>
+            <a href="Products.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h2 class="login-title">Редактировать продукт</h2>
+            <form class="login-form" id="editForm">
+                <!-- Скрытое поле для ID продукта -->
+                <input type="hidden" id="productId">
+
+                <input type="text" id="productName" class="login-input" placeholder="Имя продукта" required>
+
+                <input type="text" id="brandName" class="login-input" placeholder="Название бренда" required>
+
+                <input type="text" id="type" class="login-input" placeholder="Тип" required>
+
+                <input type="number" id="total" class="login-input" placeholder="Всего предметов" required>
+
+                <input type="number" id="available" class="login-input" placeholder="Доступные предметы" required>
+
+                <input type="number" id="purchased" class="login-input" placeholder="Купленные товары" required>
+
+                <input type="text" id="code" class="login-input" placeholder="Штрих-код" required>
+
+                <button type="submit" class="login-button">Сохранить изменения</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="queries.js"></script>
+    <script>
+        const apiBaseUrl = 'https://localhost:7296/api/Products';
+
+        // Получаем ID продукта из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('productId');
+
+        // Функция загрузки данных продукта
+        async function loadProductData() {
+            const apiUrl = `${apiBaseUrl}/${productId}`;
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+                const product = await response.json();
+                // Заполняем форму данными
+                document.getElementById('productId').value = product.productId;
+                document.getElementById('productName').value = product.productName;
+                document.getElementById('brandName').value = product.brandName;
+                document.getElementById('type').value = product.type;
+                document.getElementById('total').value = product.total;
+                document.getElementById('available').value = product.available;
+                document.getElementById('purchased').value = product.purchased;
+                document.getElementById('code').value = product.code;
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Не удалось загрузить данные продукта');
+            }
+        }
+
+        // Обработка отправки формы
+        document.getElementById('editForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const updatedData = {
+                productId: document.getElementById('productId').value,
+                productName: document.getElementById('productName').value,
+                brandName: document.getElementById('brandName').value,
+                type: document.getElementById('type').value,
+                total: parseInt(document.getElementById('total').value, 10),
+                available: parseInt(document.getElementById('available').value, 10),
+                purchased: parseInt(document.getElementById('purchased').value, 10),
+                code: document.getElementById('code').value
+            };
+
+            const apiUrl = `${apiBaseUrl}/${productId}`;
+            try {
+                await putData(apiUrl, updatedData);
+                alert('Продукт успешно обновлен');
+                window.location.href = 'Products.html'; // Возвращаемся на страницу продуктов
+            } catch (error) {
+                console.error('Ошибка при обновлении данных:', error);
+            }
+        });
+
+        // Инициализация данных при загрузке страницы
+        loadProductData();
+    </script>
+</body>
+</html>

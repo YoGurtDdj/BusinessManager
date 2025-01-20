@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать расход</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Expenses.html" style="height:25px;">
+                <img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;">
+            </a>
+            <a href="Expenses.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h2 class="login-title">Редактировать расход</h2>
+            <form class="login-form" id="editForm">
+                <!-- Скрытое поле для ID расхода -->
+                <input type="hidden" id="expenseId">
+
+                <input type="number" id="expenseCost" class="login-input" placeholder="Сумма расхода" required>
+
+                <textarea id="description" class="login-input" placeholder="Описание" required></textarea>
+
+                <input type="date" id="date" class="login-input" required>
+
+                <button type="submit" class="login-button">Сохранить изменения</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="queries.js"></script>
+    <script>
+        const apiBaseUrl = 'https://localhost:7296/api/Expenses';
+
+        // Получаем ID расхода из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const expenseId = urlParams.get('expenseId');
+
+        // Функция загрузки данных расхода
+        async function loadExpenseData() {
+            const apiUrl = `${apiBaseUrl}/${expenseId}`;
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+                const expense = await response.json();
+                // Заполняем форму данными
+                document.getElementById('expenseId').value = expense.expenseId;
+                document.getElementById('expenseCost').value = expense.expenseCost;
+                document.getElementById('description').value = expense.description;
+                document.getElementById('date').value = expense.date;
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Не удалось загрузить данные расхода');
+            }
+        }
+
+        // Обработка отправки формы
+        document.getElementById('editForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const updatedData = {
+                expenseId: document.getElementById('expenseId').value,
+                expenseCost: parseFloat(document.getElementById('expenseCost').value),
+                description: document.getElementById('description').value,
+                date: document.getElementById('date').value
+            };
+
+            const apiUrl = `${apiBaseUrl}/${expenseId}`;
+            try {
+                await putData(apiUrl, updatedData);
+                alert('Расход успешно обновлен');
+                window.location.href = 'Expenses.html'; // Возвращаемся на страницу расходов
+            } catch (error) {
+                console.error('Ошибка при обновлении данных:', error);
+            }
+        });
+
+        // Инициализация данных при загрузке страницы
+        loadExpenseData();
+    </script>
+</body>
+</html>

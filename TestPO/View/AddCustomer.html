@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Customer.html" style="height:25px;"><img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;"></a>
+            <a href="Main.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+    <div class="login-container">
+        <div class="login-box">
+            <h2 class="login-title">Добавить заказчика</h2>
+            <form class="login-form" id="postForm">
+                <input type="text" id="customerName" class="login-input" placeholder="Имя" required>
+
+                <input type="text" id="number" class="login-input" placeholder="Мобильный" required>
+
+                <input type="text" id="personType" class="login-input" placeholder="Тип" required>
+
+                <input type="text" id="total" class="login-input" placeholder="Общая книга" required>
+
+                <input type="text" id="toPay" class="login-input" placeholder="К оплате" required>
+
+                <input type="text" id="rest" class="login-input" placeholder="Оставшаяся книга" required>
+
+
+                <button type="submit" class="login-button">Сохранить поставщика</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="queries.js"></script>
+    <script>
+        document.getElementById('postForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const customerName = document.getElementById('customerName').value;
+            const number = document.getElementById('number').value;
+            const personType = document.getElementById('personType').value;
+            const total = document.getElementById('total').value;
+            const toPay = document.getElementById('toPay').value;
+            const rest = document.getElementById('rest').value;
+
+            try {
+                const newUser = await postData('https://localhost:7296/api/Customers', { customerName, number, personType, total, toPay, rest });
+            } catch (error) {
+                console.error('Ошибка добавления пользователя:', error);
+            }
+        });
+    </script>
+</body>
+</html>

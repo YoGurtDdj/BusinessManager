@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Products.html" style="height:25px;"><img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;"></a>
+            <a href="Main.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+    <div class="login-container">
+        <div class="login-box">
+            <h2 class="login-title">Добавить продукт</h2>
+            <form class="login-form" id="postForm">
+                <input type="text" id="productName" class="login-input" placeholder="Название" required>
+
+                <input type="text" id="brandName" class="login-input" placeholder="Бренд" required>
+
+                <input type="text" id="type" class="login-input" placeholder="Тип" required>
+
+                <input type="text" id="total" class="login-input" placeholder="Всего" required>
+
+                <input type="text" id="available" class="login-input" placeholder="Доступно" required>
+
+                <input type="text" id="purchased" class="login-input" placeholder="Куплено" required>
+
+                <input type="text" id="code" class="login-input" placeholder="Штрих-код" required>
+
+                <button type="submit" class="login-button">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="queries.js"></script>
+    <script>
+        document.getElementById('postForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const productName = document.getElementById('productName').value;
+            const brandName = document.getElementById('brandName').value;
+            const type = document.getElementById('type').value;
+            const total = document.getElementById('total').value;
+            const available = document.getElementById('available').value;
+            const purchased = document.getElementById('purchased').value;
+            const code = document.getElementById('code').value;
+
+            try {
+                const newUser = await postData('https://localhost:7296/api/Products', { productName, brandName, type, total, available, purchased, code });
+            } catch (error) {
+                console.error('Ошибка добавления пользователя:', error);
+            }
+        });
+    </script>
+</body>
+</html>

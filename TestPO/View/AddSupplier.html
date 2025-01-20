@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Suppliers.html" style="height:25px;"><img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;"></a>
+            <a href="Main.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+    <div class="login-container">
+        <div class="login-box">
+            <h2 class="login-title">Добавить поставщика</h2>
+            <form class="login-form" id="postForm">
+                <input type="text" id="supplierName" class="login-input" placeholder="Имя" required>
+
+                <input type="text" id="address" class="login-input" placeholder="Адрес" required>
+
+                <input type="text" id="number" class="login-input" placeholder="Телефон" required>
+
+                <input type="text" id="phoneNumber" class="login-input" placeholder="Мобильный" required>
+
+                <input type="text" id="quantity" class="login-input" placeholder="Количество" required>
+
+                <button type="submit" class="login-button">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="queries.js"></script>
+    <script>
+        document.getElementById('postForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const supplierName = document.getElementById('supplierName').value;
+            const address = document.getElementById('address').value;
+            const number = document.getElementById('number').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const quantity = document.getElementById('quantity').value;
+
+            try {
+                const newUser = await postData('https://localhost:7296/api/Suppliers', { supplierName, quantity, address, number, phoneNumber });
+            } catch (error) {
+                console.error('Ошибка добавления пользователя:', error);
+            }
+        });
+    </script>
+</body>
+</html>

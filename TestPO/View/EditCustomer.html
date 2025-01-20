@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Customer.html" style="height:25px;"><img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;"></a>
+            <a href="Customer.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h2 class="login-title">Добавить поставщика</h2>
+            <form class="login-form" id="editForm">
+                <input type="hidden" id="customerId">
+
+                <input type="text" id="customerName" class="login-input" placeholder="Имя" required>
+
+                <input type="text" id="number" class="login-input" placeholder="Мобильный" required>
+
+                <input type="text" id="personType" class="login-input" placeholder="Тип" required>
+
+                <input type="text" id="total" class="login-input" placeholder="Общая книга" required>
+
+                <input type="text" id="toPay" class="login-input" placeholder="К оплате" required>
+
+                <input type="text" id="rest" class="login-input" placeholder="Оставшаяся книга" required>
+
+                <button type="submit" class="login-button">Сохранить поставщика</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="queries.js"></script>
+    <script>
+        const apiBaseUrl = 'https://localhost:7296/api/Customers';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const customerId = urlParams.get('customerId');
+
+        async function loadSupplierData() {
+            const apiUrl = `${apiBaseUrl}/${customerId}`;
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+                const customer = await response.json();
+                document.getElementById('customerId').value = customer.customerId;
+                document.getElementById('customerName').value = customer.customerName;
+                document.getElementById('number').value = customer.number;
+                document.getElementById('personType').value = customer.personType;
+                document.getElementById('total').value = customer.total;
+                document.getElementById('toPay').value = customer.toPay;
+                document.getElementById('rest').value = customer.rest;
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Не удалось загрузить данные поставщика');
+            }
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const updatedData = {
+                customerId: document.getElementById('customerId').value,
+                customerName: document.getElementById('customerName').value,
+                number: document.getElementById('number').value,
+                personType: document.getElementById('personType').value,
+                total: document.getElementById('total').value,
+                toPay: document.getElementById('toPay').value,
+                rest: document.getElementById('rest').value
+            };
+
+            const apiUrl = `${apiBaseUrl}/${customerId}`;
+            try {
+                await putData(apiUrl, updatedData);
+                alert('Данные успешно обновлены');
+                window.location.href = 'Customer.html';
+            } catch (error) {
+                console.error('Ошибка при обновлении данных:', error);
+            }
+        });
+
+        loadSupplierData();
+    </script>
+</body>
+</html>

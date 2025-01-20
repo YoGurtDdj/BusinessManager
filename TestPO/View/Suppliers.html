@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Список поставщиков</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Main.html" style="height:25px;"><img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;"></a>
+            <a href="Main.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="top-content">
+            <a href="AddSupplier.html" class="create-btn">Добавить поставщика</a>
+        </div>
+        <div class="content">
+            <h1 class="title">Список поставщиков</h1>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Поиск">
+                <button id="searchButton" class="search-btn">
+                    <img src="icons/search.png" style="width: 20px; height: 20px;">
+                </button>
+            </div>
+
+            <table class="table" id="resultTable">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Имя</th>
+                        <th>Количество</th>
+                        <th>Адрес</th>
+                        <th>Телефон</th>
+                        <th>Мобильный</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('searchInput').addEventListener('input', (event) => {
+            const searchValue = event.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#resultTable tbody tr');
+
+            rows.forEach(row => {
+                const cells = Array.from(row.querySelectorAll('td'));
+                const rowText = cells.map(cell => cell.textContent.toLowerCase()).join(' ');
+                if (rowText.includes(searchValue)) {
+                    row.style.display = ''; // Показываем строку
+                } else {
+                    row.style.display = 'none'; // Скрываем строку
+                }
+            });
+        });
+
+    </script>
+    <script src="queries.js"></script>
+    <script>
+        const apiBaseUrl = 'https://localhost:7296/api/Suppliers';
+
+        const deleteSupplier = async (supplierId) => {
+            const apiUrl = `${apiBaseUrl}/${supplierId}`;
+            await deleteData(apiUrl);
+            loadDataToTable(apiBaseUrl, 'resultTable', ['supplierId', 'supplierName', 'quantity', 'address', 'number', 'phoneNumber'], deleteSupplier, 'EditSupplier.html', 'supplierId');
+        };
+
+        loadDataToTable(apiBaseUrl, 'resultTable', ['supplierId', 'supplierName', 'quantity', 'address', 'number', 'phoneNumber'], deleteSupplier, 'EditSupplier.html', 'supplierId');
+
+    </script>
+</body>
+</html>

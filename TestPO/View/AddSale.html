@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Sales.html" style="height:25px;"><img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;"></a>
+            <a href="Main.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+    <div class="login-container">
+        <div class="login-box">
+            <h2 class="login-title">Добавить поставщика</h2>
+            <form class="login-form" id="postForm">
+                <input type="text" id="receiptNumber" class="login-input" placeholder="Номер квитанции" required>
+
+                <input type="text" id="customerId" class="login-input" placeholder="Номер заказчика" required>
+
+                <input type="text" id="quantity" class="login-input" placeholder="Количество" required>
+
+                <input type="text" id="totalSum" class="login-input" placeholder="Всего" required>
+
+                <input type="date" id="date" class="login-input" placeholder="Дата" required>
+
+                <button type="submit" class="login-button">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="queries.js"></script>
+    <script>
+        document.getElementById('postForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const receiptNumber = document.getElementById('receiptNumber').value;
+            const customerId = document.getElementById('customerId').value;
+            const quantity = document.getElementById('quantity').value;
+            const totalSum = document.getElementById('totalSum').value;
+            const date = document.getElementById('date').value;
+
+            try {
+                const newUser = await postData('https://localhost:7296/api/Sales', { receiptNumber, customerId, quantity, totalSum, date });
+            } catch (error) {
+                console.error('Ошибка добавления пользователя:', error);
+            }
+        });
+    </script>
+</body>
+</html>

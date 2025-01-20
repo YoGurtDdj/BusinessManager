@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать сотрудника</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="Employees.html" style="height:25px;">
+                <img src="icons/back.png" style="width: 25px; height: 25px; margin-right: 20px;">
+            </a>
+            <a href="Employees.html" style="text-decoration: none; color: white;">PARTUM</a>
+        </div>
+    </header>
+
+    <div class="login-container">
+        <div class="login-box">
+            <h2 class="login-title">Редактировать сотрудника</h2>
+            <form class="login-form" id="editForm">
+                <!-- Скрытое поле для ID сотрудника -->
+                <input type="hidden" id="employeeId">
+
+                <input type="text" id="name" class="login-input" placeholder="Имя" required>
+
+                <input type="text" id="lastName" class="login-input" placeholder="Отчество" required>
+
+                <input type="tel" id="phoneNumber" class="login-input" placeholder="Телефон" required>
+
+                <input type="text" id="address" class="login-input" placeholder="Адрес" required>
+
+                <input type="date" id="date" class="login-input" required>
+
+                <button type="submit" class="login-button">Сохранить изменения</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="queries.js"></script>
+    <script>
+        const apiBaseUrl = 'https://localhost:7296/api/Employees';
+
+        // Получаем ID сотрудника из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const employeeId = urlParams.get('employeeId');
+
+        // Функция загрузки данных сотрудника
+        async function loadEmployeeData() {
+            const apiUrl = `${apiBaseUrl}/${employeeId}`;
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+                const employee = await response.json();
+                // Заполняем форму данными
+                document.getElementById('employeeId').value = employee.employeeId;
+                document.getElementById('name').value = employee.name;
+                document.getElementById('lastName').value = employee.lastName;
+                document.getElementById('phoneNumber').value = employee.phoneNumber;
+                document.getElementById('address').value = employee.address;
+                document.getElementById('date').value = employee.date;
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Не удалось загрузить данные о сотруднике');
+            }
+        }
+
+        // Обработка отправки формы
+        document.getElementById('editForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const updatedData = {
+                employeeId: document.getElementById('employeeId').value,
+                name: document.getElementById('name').value,
+                lastName: document.getElementById('lastName').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                address: document.getElementById('address').value,
+                date: document.getElementById('date').value
+            };
+
+            const apiUrl = `${apiBaseUrl}/${employeeId}`;
+            try {
+                await putData(apiUrl, updatedData);
+                alert('Сотрудник успешно обновлен');
+                window.location.href = 'Employees.html'; // Возвращаемся на страницу списка сотрудников
+            } catch (error) {
+                console.error('Ошибка при обновлении данных:', error);
+            }
+        });
+
+        // Инициализация данных при загрузке страницы
+        loadEmployeeData();
+    </script>
+</body>
+</html>
